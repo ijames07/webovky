@@ -13,9 +13,13 @@ use Nette,
 class UserManager extends Nette\Object implements Nette\Security\IAuthenticator
 {
 	const
-		TABLE_NAME = 'users',
+		TABLE_NAME = 'user',
 		COLUMN_ID = 'id',
-		COLUMN_NAME = 'username',
+		COLUMN_LOGIN = 'login',
+		COLUMN_NAME = 'name',
+		COLUMN_SURNAME = 'surname',
+		COLUMN_GENDER = 'gender',
+		COLUMN_EMAIL = 'email',
 		COLUMN_PASSWORD_HASH = 'password',
 		COLUMN_ROLE = 'role';
 
@@ -39,7 +43,7 @@ class UserManager extends Nette\Object implements Nette\Security\IAuthenticator
 	{
 		list($username, $password) = $credentials;
 
-		$row = $this->database->table(self::TABLE_NAME)->where(self::COLUMN_NAME, $username)->fetch();
+		$row = $this->database->table(self::TABLE_NAME)->where(self::COLUMN_LOGIN, $username)->fetch();
 
 		if (!$row) {
 			throw new Nette\Security\AuthenticationException('The username is incorrect.', self::IDENTITY_NOT_FOUND);
@@ -63,14 +67,17 @@ class UserManager extends Nette\Object implements Nette\Security\IAuthenticator
 	 * Adds new user.
 	 * @param  string
 	 * @param  string
-	 * @return void
+	 * @return Nette\Database\Table\ActiveRow
 	 */
-	public function add($username, $password)
-	{
+	public function add($user) {
 		try {
-			$this->database->table(self::TABLE_NAME)->insert(array(
-				self::COLUMN_NAME => $username,
-				self::COLUMN_PASSWORD_HASH => Passwords::hash($password),
+			return $this->database->table(self::TABLE_NAME)->insert(array(
+				self::COLUMN_LOGIN			=>	$user->login,
+				self::COLUMN_PASSWORD_HASH	=>	Passwords::hash($user->password),
+				self::COLUMN_EMAIL			=>	$user->email,
+				self::COLUMN_GENDER			=>	intval($user->gender) == 0 ? 'f' : 'm',
+				self::COLUMN_NAME			=>	$user->name,
+				self::COLUMN_SURNAME		=>	$user->surname
 			));
 		} catch (Nette\Database\UniqueConstraintViolationException $e) {
 			throw new DuplicateNameException;

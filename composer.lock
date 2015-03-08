@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "5e4f90065fe785e028a30aa233d06f67",
+    "hash": "7edd3c323984aadd746754ad21f89ee8",
     "packages": [
         {
             "name": "dg/adminer-custom",
@@ -24,6 +24,48 @@
             "notification-url": "https://packagist.org/downloads/",
             "description": "Customization for the best database management tool written in PHP, Adminer",
             "time": "2015-02-07 20:26:30"
+        },
+        {
+            "name": "instante/bootstrap-3-renderer",
+            "version": "v1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://bitbucket.org/mistylab/instante-bootstrap3renderer.git",
+                "reference": "23a2e9fe43f92400feab2408e80e6f62d3e4fb6d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://bitbucket.org/mistylab/instante-bootstrap3renderer/get/23a2e9fe43f92400feab2408e80e6f62d3e4fb6d.zip",
+                "reference": "23a2e9fe43f92400feab2408e80e6f62d3e4fb6d",
+                "shasum": ""
+            },
+            "require": {
+                "nette/nette": "~2.1"
+            },
+            "require-dev": {
+                "jakub-onderka/php-parallel-lint": "~0.6",
+                "nette/tester": "@dev"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Instante\\Bootstrap3Renderer\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause",
+                "GPL-2.0",
+                "GPL-3.0"
+            ],
+            "description": "Nette forms renderer with bootstrap 3",
+            "keywords": [
+                "Forms",
+                "bootstrap",
+                "bootstrap3",
+                "nette"
+            ],
+            "time": "2014-08-07 15:11:49"
         },
         {
             "name": "latte/latte",
