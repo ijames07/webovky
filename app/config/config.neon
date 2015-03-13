@@ -21,4 +21,5 @@ session:
 
 services:
 	usersService: App\Model\UserManager(@database.default.context)
+	roomsService: App\Model\Rooms(@database.default.context)
 	router: App\RouterFactory::createRouter
