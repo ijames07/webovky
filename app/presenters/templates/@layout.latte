@@ -8,25 +8,44 @@
 <head>
 	<meta charset="utf-8">
 
-	<title>{ifset title}{include title|striptags} | {/ifset}Webovky</title>
+	<title>{ifset title}{include title|striptags} | {/ifset}Chat</title>
 	<link rel="stylesheet" href="{$basePath}/s/bootstrap/dist/css/bootstrap.min.css" />
 	<link rel="stylesheet" href="{$basePath}/s/bootstrap/dist/css/bootstrap-theme.min.css" />
+	<link rel="stylesheet" href="{$basePath}/css/chat.css" />
+	<link rel="stylesheet" href="{$basePath}/css/chaty.css" />
 	<link rel="stylesheet" href="{$basePath}/css/style.css">
 	<link rel="shortcut icon" href="{$basePath}/favicon.ico">
 	{block head}{/block}
 </head>
 
 <body>
-	<div n:foreach="$flashes as $flash" n:class="flash, $flash->type">{$flash->message}</div>
 	<div class="container">
-			{include content}
+		<div class="row">
+			<nav class="navbar navbar-default navbar-fixed-top">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#collapse">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+				</div>
+				<div class="collapse navbar-collapse" id="collapse">
+					<ul class="nav navbar-nav">
+						{include #header}
+					</ul>
+				</div>
+			</nav>
+		</div>
 	</div>
+	{include content}
+
 
 	{block scripts}
 	<script src="{$basePath}/s/jquery/dist/jquery.min.js"></script>
 	<script src="//nette.github.io/resources/js/netteForms.min.js"></script>
-	<script src="{$basePath}/js/main.js"></script>
 	<script src="{$basePath}/s/bootstrap/dist/js/bootstrap.min.js"></script>
+	<script src="{$basePath}/js/main.js"></script>
 	{/block}
 </body>
 </html>
