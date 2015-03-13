@@ -1,5 +1,5 @@
 $(function(){
-	$('#snd').click(function() {
+	$('#send').click(function() {
 		send();
 	});
 	$(document).keypress(function(e) {
@@ -16,4 +16,7 @@ function send() {
 	var time = new Date();
 	$('#window').append('<p>[' + time.getHours() + ':' + ("0" + time.getMinutes()).slice(-2) + ':' + ('0' + time.getSeconds()).slice(-2) + '] Adam: ' + msg + '</p>');
 }
+$('.modal').on('shown.bs.modal', function () {
+    $(this).find('input').focus();
+});
 });
