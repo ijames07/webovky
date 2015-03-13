@@ -10,10 +10,13 @@ use Nette,
  * Sign in/out presenters.
  */
 class SignPresenter extends BasePresenter {
-	
-	public function actionIn() {
-		
-	}
+	/*
+	public function startup() {
+		parent::startup();
+		if ($this->getUser()->isLoggedIn()) {
+			$this->redirect('Chatrooms:default');
+		}
+	}*/
 	
 	/**
 	 * Sign-in form factory.
@@ -28,11 +31,11 @@ class SignPresenter extends BasePresenter {
 			->addCondition(Form::FILLED);
 		$form->addCheckbox('remember', 'Zapamatovat přihlášení');
 		$form->addSubmit('send', 'Přihlásit');
-		$form->onSuccess[] = callback($this, 'signInFormSuccess');
+		$form->onSuccess[] = callback($this, 'signInFormSucceeded');
 		return $form;
 	}
 	
-	public function signInFormSuccess(Form $form) {
+	public function signInFormSucceeded(Form $form) {
 		$values = $form->getValues();
 		if ($values->remember) {
 			$this->user->setExpiration('14 days', FALSE);
@@ -44,7 +47,7 @@ class SignPresenter extends BasePresenter {
 			$this->getUser()->login($values->login, $values->password);
 			$this->flashMessage("Přihlášení proběhlo úspěšně", 'success');
 			//$this->restoreRequest($this->backlink);
-			$this->redirect('Homepage:');
+			$this->redirect('Chatrooms:');
 		} catch (Nette\Security\AuthenticationException $e) {
 			$form->addError($e->getMessage());
 		}
