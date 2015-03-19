@@ -21,8 +21,11 @@ class ChatroomsPresenter extends \App\Presenters\BasePresenter {
 		$this->template->title = 'Místnosti';	
 	}
 	
-	public function actionRoom($id) {
-		
+	public function actionRoom($id = '') {
+		if ($id == '') {
+			$this->redirect('Chatrooms:');
+		}
+		$this->template->room = $this->context->getService('roomsService')->get($id);
 	}
 }
 		
