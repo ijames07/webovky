@@ -1,4 +1,11 @@
-{block content}
-<h1 n:block=title>Sign in</h1>
+{layout '../logged_out.latte'}
 
-{control signInForm}
+{block content}
+<div class="container">
+	<div class="row">
+	<h1 n:block=title>Přihlášení</h1>
+
+	{control signInForm}
+	</div> <!-- konec row -->
+</div> <!-- konec container -->
+{/block}
