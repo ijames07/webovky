@@ -15,6 +15,11 @@ class Rooms extends Nette\Object {
 	
 	/** @return Nette\Database\Table\Selection */
 	public function getAll() {
-		return $this->database->table("chatroom");
+		return $this->database->table("room");
+	}
+	
+	/** @return Nette\Database\Table\ActiveRow */
+	public function get($id = '') {
+		return $this->database->table('room')->get($id);
 	}
 }
