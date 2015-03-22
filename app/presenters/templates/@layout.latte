@@ -31,7 +31,14 @@
 				</div>
 				<div class="collapse navbar-collapse" id="collapse">
 					<ul class="nav navbar-nav navbar-left">
-						{include #header}
+						{if $user->isLoggedIn()}
+							<li n:class="$presenter->isLinkCurrent('Chatrooms:') ? active, navbar-left"><a href="{plink Chatrooms:}">Místnosti</a></li>
+							<li class="navbar-right"><a href="{plink Sign:out}">Odhlásit</a></li>
+						{else}
+							<li n:class="$presenter->isLinkCurrent('Homepage:') ? active, navbar-left"><a href="{plink Homepage:}">Domů</a></li>
+							<li n:class="$presenter->isLinkCurrent('Sign:in') ? active, navbar-left"><a href="{plink Sign:in}">Přihlásit</a></li>
+							<li n:class="$presenter->isLinkCurrent('Sign:register') ? active, navbar-left"><a href="{plink Sign:register}">Registrovat</a></li>
+						{/if}
 					</ul>
 				</div>
 			</nav>
