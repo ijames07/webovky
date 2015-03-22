@@ -15,7 +15,7 @@ $(function(){
 		$('#msg').val('');
 		var jqxhr = $.ajax({ 
 						method: 'POST',
-						url: "/www/chatrooms/send",
+						url: "/chat/www/chatrooms/send",
 						cache: false,
 						data: { msg: msg }
 					})
