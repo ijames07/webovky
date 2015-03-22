@@ -52,6 +52,10 @@ class SignPresenter extends BasePresenter {
 			$form->addError($e->getMessage());
 		}
 	}
+	
+	public function actionDefault() {
+		$this->redirect('Sign:in');
+	}
 
 	public function actionOut()
 	{
