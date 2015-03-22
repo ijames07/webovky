@@ -25,7 +25,52 @@ class ChatroomsPresenter extends \App\Presenters\BasePresenter {
 		if ($id == '') {
 			$this->redirect('Chatrooms:');
 		}
-		$this->template->room = $this->context->getService('roomsService')->get($id);
+		
+		$rooms = $this->context->getService('roomsService');
+		$this->template->messages = $this->context->getService('messagesService')
+				->getRoomMsg($id);
+		$rooms->enterRoom($this->getUser()->getId(), $id);
+		$this->template->room = $rooms->get($id);
+		$this->template->users = $rooms->getRoomUsers($id);
+	}
+	
+	public function actionSend() {
+		if (!$this->isAjax()) {
+			return;
+		}
+		$msg = $this->request->getPost('msg');	
+		if (strpos($msg, '/w') === 0) {
+			
+		} else {
+			// public message to whole chatroom
+			$rooms = $this->context->getService('roomsService');
+			$user_id = $this->getUser()->getId();
+			$chatroom = $rooms->inRoom($user_id);
+			$this->context->getService('messagesService')
+					->createPublicMsg($user_id, $chatroom, $msg);
+			$rooms->updateLastMsg($user_id);
+		}
+		
+		/*
+		$msg = explode(' ', $this->request->getPost('msg'));	
+		if (strcmp(array_shift($msg), '/w') === 0) {
+			// private message to one chat user
+			$receiver = array_shift($msg);
+			$msg = array_implode(' ', $msg);
+			$this->context->getService('messagesService')
+					->createPrivateMsg($this->getUser()->getId(), $receiver, $msg);
+		} else {
+			// public message to whole chatroom
+			$rooms = $this->context->getService('roomsService');
+			$user_id = $this->getUser()->getId();
+			$chatroom = $rooms->inRoom($user_id);
+			$msg = array_implode(' ', $msg);
+			$this->context->getService('messagesService')
+					->createPublicMsg($user_id, $chatroom, $msg);
+			$rooms->updateLastMsg($user_id);
+		}*/
+		$this->payload->message = "OK";
+		$this->terminate();
 	}
 }
 		
