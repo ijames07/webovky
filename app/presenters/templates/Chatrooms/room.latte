@@ -1,12 +1,11 @@
-{layout '../logged_in.latte'}
 {block content}
 <div class="container">		
 	<div id="input" class="row" style="z-index: 1; border-bottom: 1px solid #ddd; margin-bottom: 10px; padding-bottom: 10px; position: fixed;">
 		<div class="col-md-9">
 			<div class="input-group">
-				<input type="text" class="form-control" placeholder="Napiš zprávu..." id="msg">
+				<input type="text" class="form-control" placeholder="Napiš zprávu..." id="msg" maxlength="255">
 				<span class="input-group-btn">
-					<button class="btn btn-default" type="button" id="snd">Odeslat</button>
+					<button class="btn btn-default" type="button" id="send">Odeslat</button>
 				</span>
 			</div>
 		</div>
