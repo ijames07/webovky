@@ -13,8 +13,17 @@ $(function(){
 			return;
 		}
 		$('#msg').val('');
-		var time = new Date();
-		$('#window').prepend('<div class="thumbnail"><p>[' + time.getHours() + ':' + ("0" + time.getMinutes()).slice(-2) + ':' + ('0' + time.getSeconds()).slice(-2) + '] Adam: ' + msg + '</p></div>');
+		var jqxhr = $.ajax({ 
+						method: 'POST',
+						url: "http://localhost/chat/www/chatrooms/send",
+						cache: false,
+						data: { msg: msg }
+					})
+			.done(function(msg) {
+				console.log(msg);
+			});
+		/*var time = new Date();
+		$('#window').prepend('<div class="thumbnail"><p>[' + time.getHours() + ':' + ("0" + time.getMinutes()).slice(-2) + ':' + ('0' + time.getSeconds()).slice(-2) + '] Adam: ' + msg + '</p></div>');*/
 	}
 	$('.modal').on('shown.bs.modal', function () {
 		$(this).find('[name=pw]').focus();
