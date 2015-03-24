@@ -37,13 +37,28 @@ class Messages extends Nette\Object {
 	}
 	
 	/** @return Nette\Database\Table\Selection */
-	public function getRoomMsg($id = '') {
+	public function getMessagesInRoom($id = '', $last = '01.01.1970') {
 		if ($id == '') {
 			return;
 		}
 		return $this->database->table('message')
 				->where('chatroom_id', $id)
+				->where('time >= ?', $last)
+				->order('time DESC');
+	}
+	
+	/** @return Nette\Database\Table\Selection */
+	public function getLimitedMessages($room, $count = 10) {
+		return $this->database->table('message')
+				->where('chatroom_id', $room)
 				->order('time DESC')
-				->limit(20);
+				->limit($count);
+	}
+	
+	/** @return Nette\Database\Table\Selection */
+	public function getNewMessages($room, $last = 'now()') {
+		return $this->database->table('message')
+				->where('chatroom_id', $room)
+				->where('time > ?', $last);
 	}
 }

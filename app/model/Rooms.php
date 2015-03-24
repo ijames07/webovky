@@ -23,21 +23,30 @@ class Rooms extends Nette\Object {
 		return $this->database->table('room')->get($id);
 	}
 	
-	/** @return int */
-	public function inRoom($user = '') {
-		if ($user == '') {
+	/** @return Nette\Database\Table\ActiveRow */
+	public function inRoom($user = '', $room = '') {
+		if ($user == '' || $room == '') {
 			return;
 		}
 		return $this->database->table('in_chatroom')
 				->where('user_id', $user)
-				->fetch()->chatroom_id;
+				->where('chatroom_id', $room)
+				->fetch();
+	}
+	
+	/** @return Nette\Database\Table\ActiveRow */
+	public function getInRoom($id = '', $room = '') {
+		if ($id == '' || $room == '') {
+			return;
+		}
+		return $this->database->table('in_chatroom')
+				->where('user_id', $id)
+				->where('chatroom_id', $room)
+				->fetch();
 	}
 	
 	/** @return int */
 	public function enterRoom($who, $where) {
-		$this->database->table('in_chatroom')
-				->where('user_id', $who)
-				->delete();
 		return $this->database->table('in_chatroom')
 				->insert(array(
 					'user_id'		=>	$who,
@@ -46,11 +55,12 @@ class Rooms extends Nette\Object {
 	}
 	
 	/** @return int */
-	public function updateLastMsg($id) {
+	public function updateRoomLastMsg($id, $room, $time = 'now()') {
 		return $this->database->table('in_chatroom')
 				->where('user_id', $id)
+				->where('chatroom_id', $room)
 				->update(array(
-					'last_message' => 'now()'
+					'last_message' => $time
 				));
 	}
 	

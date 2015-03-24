@@ -33,6 +33,7 @@
 					<ul class="nav navbar-nav navbar-left">
 						{if $user->isLoggedIn()}
 							<li n:class="$presenter->isLinkCurrent('Chatrooms:') ? active, navbar-left"><a href="{plink Chatrooms:}">Místnosti</a></li>
+							<li class="navbar-right"></li>
 							<li class="navbar-right"><a href="{plink Sign:out}">Odhlásit</a></li>
 						{else}
 							<li n:class="$presenter->isLinkCurrent('Homepage:') ? active, navbar-left"><a href="{plink Homepage:}">Domů</a></li>
@@ -47,11 +48,10 @@
 	{include content}
 
 
-	{block scripts}
 	<script src="{$basePath}/s/jquery/dist/jquery.min.js"></script>
 	<script src="//nette.github.io/resources/js/netteForms.min.js"></script>
 	<script src="{$basePath}/s/bootstrap/dist/js/bootstrap.min.js"></script>
 	<script src="{$basePath}/js/main.js"></script>
-	{/block}
+	{ifset scripts}{include scripts}{/ifset}
 </body>
 </html>

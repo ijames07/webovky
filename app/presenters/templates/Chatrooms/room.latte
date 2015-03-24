@@ -1,9 +1,10 @@
 {block content}
 <div class="container">		
+	<input type="hidden" id="name" value="{$nick}" />
 	<div id="input" class="row" style="z-index: 1; border-bottom: 1px solid #ddd; margin-bottom: 10px; padding-bottom: 10px; position: fixed;">
 		<div class="col-md-9">
 			<div class="input-group">
-				<input type="text" class="form-control" placeholder="Napiš zprávu..." id="msg" maxlength="255">
+				<input type="text" class="form-control" placeholder="Napiš zprávu ..." id="msg" maxlength="255">
 				<span class="input-group-btn">
 					<button class="btn btn-default" type="button" id="send">Odeslat</button>
 				</span>
@@ -12,18 +13,19 @@
 	</div>
 	<div class="row" style="margin-top: 60px">
 		<div class="row-same-height">
+			<h1 class="row col-xs-offset-4" n:block=title>{$room->title}</h1>
 			<div id="window" class="col-md-10 col-xs-height">
 				{foreach $messages as $message}
 					<div class="row">
-						<div class="col-sm-2 col-xs-2 col-md-1">
+						<!--<div class="col-sm-2 col-xs-2 col-md-1">
 							<div class="img-responsive">
 								<img src="{$basePath}/images/{if $iterator->isEven()}user.png{else}user.gif{/if}" />
 							</div>
-						</div>
-						<div class="col-sm-10 col-xs-10 col-md-10">
+						</div>-->
+						<div class="col-sm-10 col-xs-10 col-md-10 message" id="{$message->id}">
 							<div class="thumbnail">
 								<div class="caption">
-									{$message->ref('from_user_id')->name}
+									<span class="author">{$message->ref('from_user_id')->name}</span>
 									<div class="pull-right">
 										{$message->time|date:'G:i:s j.n.'} 
 									</div>
@@ -49,4 +51,12 @@
 		</div>
 	</div>
 </div>
+{/block}
+
+{block scripts}
+<script type="text/javascript">
+	setInterval(function() {
+		update();
+	}, 2500);
+</script>
 {/block}

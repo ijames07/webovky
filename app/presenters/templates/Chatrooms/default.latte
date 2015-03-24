@@ -13,7 +13,7 @@
 					<td>{$room->title}</td>
 					<td>{$room->description}</td>
 					<td>
-						{if $room->lock == 'f'}
+						{if $room->lock == 'f' || $in_room == $room->id}
 							<a href='{link Chatrooms:room, $room->id}' class='btn btn-default' role='button'><span class='glyphicon glyphicon-hand-right'></span> Vstoupit</a>
 						{else}
 						<a href='' data-toggle='modal' data-target='#{$room->id}' class='btn btn-default' role='button'><span class='glyphicon glyphicon-lock'></span> Vstoupit</a>
@@ -25,7 +25,7 @@
 										<h4 class='modal-title'>Vyžadováno heslo</h4>
 									</div>
 									<div class='modal-body'>
-										<form method="post" class="form-horizontal" action="http://localhost/test.php">
+										<form method="post" class="form-horizontal" action="{link Chatrooms:room $room->id}">
 											<input name="pw" type='password' max-length="50" placeholder='Heslo ...' autocomplete='false' />
 											<input type="hidden" name="room" value="{$room->id}" />
 									</div>
