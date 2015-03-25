@@ -2,7 +2,8 @@
 
 namespace App\Presenters;
 
-use Nette;
+use Nette,
+	Nette\Application\UI\Form as Form;
 
 class ChatroomsPresenter extends \App\Presenters\BasePresenter {
 	
@@ -23,7 +24,12 @@ class ChatroomsPresenter extends \App\Presenters\BasePresenter {
 		$this->template->rooms = $rooms->getAll()->order('created DESC');
 		
 		// pro odlisny vypis zamknute mistnosti, ve ktere ale uzivatel uz je
-		$this->template->in_room = $rooms->inRoom($this->getUser()->getId());
+		$this->template->in_room = array();
+		// ziskam vsechny mistnosti, ve kterych je uzivatel
+		$user_rooms = $rooms->inRooms($this->getUser()->getId());
+		foreach ($user_rooms as $room) {
+			array_push($this->template->in_room, $room->chatroom_id);
+		}
 	}
 	
     public function actionUpdate() {
@@ -36,7 +42,7 @@ class ChatroomsPresenter extends \App\Presenters\BasePresenter {
             $this->terminate();
         }
         // ziskam activeRow s podrobnostmi, (chatroom_id, user_id, last_message, entered)
-        $in_room = $this->context->getService('roomsService')->inRoom($this->getUser()->getId(), $room);
+        $in_room = $this->context->getService('roomsService')->getInRoom($this->getUser()->getId(), $room);
         if (is_null($in_room)) {
             // nema tu co delat, neni clenem teto mistnosti
             $this->terminate();
@@ -78,7 +84,7 @@ class ChatroomsPresenter extends \App\Presenters\BasePresenter {
 			$this->redirect('Chatrooms:');
 		}
 		
-		// V ktere mistnosti je aktualne uzivatel?
+		// Je uzivatel v teto mistnosti?
 		$in_room = $rooms->getInRoom($this->getUser()->getId(), $id);
 		
 		$messages = $this->context->getService('messagesService');
@@ -95,6 +101,7 @@ class ChatroomsPresenter extends \App\Presenters\BasePresenter {
 				}
 			}
 			$rooms->enterRoom($this->getUser()->getId(), $id);
+			$in_room = $rooms->getInRoom($this->getUser()->getId(), $id);
 			$this->template->messages = $messages->getLimitedMessages($id);
 		} else {
 			// vratil se
@@ -139,6 +146,36 @@ class ChatroomsPresenter extends \App\Presenters\BasePresenter {
 		}
 		//$this->payload->message = $msg;
 		$this->terminate();
+	}
+	
+	public function actionCreate() {
+		
+	}
+	
+	protected function createComponentCreateChatroom() {
+		$form = new Form;
+		$form->setRenderer(new \Instante\Bootstrap3Renderer\BootstrapRenderer());
+		$form->addText('title', 'Název')
+				->addRule(Form::FILLED, 'Zadejte název místnosti');
+		$form->addText('description', 'Popis')
+				->addRule(Form::FILLED, 'Zadejte popis místnosti');
+		$form->addCheckbox('locked', 'Uzamknutá?');
+		$form->addPassword('password', 'Heslo pro vstup')
+				->setOption('description', 'Vyžadováno pouze pokud se jedná o zamknutou místnost')
+				->addConditionOn($form['locked'], Form::EQUAL, TRUE)
+					->setRequired('Napiš heslo pro vstup do místnosti');
+		$form->addSubmit('send', 'Vytvořit');
+		$form->onSuccess[] = callback($this, 'createChatroomSuccess');
+		return $form;
+	}
+	
+	public function createChatroomSuccess(Form $form) {
+		$values = $form->getValues();
+		$values["user_id"] = $this->getUser()->getId();
+		$chatrooms = $this->context->getService('roomsService');
+		$newRoom = $chatrooms->createRoom($values);
+		$chatrooms->enterRoom($this->getUser()->getId(), $newRoom->id);
+		$this->redirect('Chatrooms:room', $newRoom->id);
 	}
 }
 		

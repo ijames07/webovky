@@ -24,14 +24,12 @@ class Rooms extends Nette\Object {
 	}
 	
 	/** @return Nette\Database\Table\ActiveRow */
-	public function inRoom($user = '', $room = '') {
-		if ($user == '' || $room == '') {
+	public function inRooms($user = '') {
+		if ($user == '') {
 			return;
 		}
 		return $this->database->table('in_chatroom')
-				->where('user_id', $user)
-				->where('chatroom_id', $room)
-				->fetch();
+				->where('user_id', $user);
 	}
 	
 	/** @return Nette\Database\Table\ActiveRow */
@@ -72,5 +70,24 @@ class Rooms extends Nette\Object {
 		return $this->database->table('in_chatroom')
 				->where('chatroom_id', $id)
 				->order('last_message DESC');
+	}
+	
+	/** @return Nette\Database\Table\ActiveRow */
+	public function createRoom($data) {
+		if (isset($data["locked"])  && $data["locked"] == TRUE && isset($data["password"])) {
+			return $this->database->table('room')->insert(array(
+				'title'	=> $data["title"],
+				'owner_user_id'	=> $data["user_id"],
+				'lock'	=> 't',
+				'description'	=> $data["description"],
+				'password'	=> $data["password"]
+			));
+		} else {
+			return $this->database->table('room')->insert(array(
+				'title'	=> $data["title"],
+				'owner_user_id'	=> $data["user_id"],
+				'description'	=> $data["description"]
+			));
+		}
 	}
 }

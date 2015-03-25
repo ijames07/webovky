@@ -1,51 +1,54 @@
 {block content}
-<div class="container">		
+<div class="container-fluid">		
 	<input type="hidden" id="name" value="{$nick}" />
-	<div id="input" class="row" style="z-index: 1; border-bottom: 1px solid #ddd; margin-bottom: 10px; padding-bottom: 10px; position: fixed;">
-		<div class="col-md-9">
-			<div class="input-group">
+	<div id="input" class="row vstup">
+		<div class="col-xs-9 col-sm-10 col-md-9">
+			<!--<div class="input-group">
 				<input type="text" class="form-control" placeholder="Napiš zprávu ..." id="msg" maxlength="255">
 				<span class="input-group-btn">
 					<button class="btn btn-default" type="button" id="send">Odeslat</button>
 				</span>
-			</div>
+			</div>-->
+			<input type="text" class="form-control" placeholder="Napiš zprávu ..." id="msg" maxlength="255">
+					</div>
+		<div class="col-xs-3 col-sm-2 col-md-1">
+			<button class="btn btn-default" type="button" id="send">Odeslat</button>
 		</div>
+
 	</div>
 	<div class="row" style="margin-top: 60px">
-		<div class="row-same-height">
-			<h1 class="row col-xs-offset-4" n:block=title>{$room->title}</h1>
-			<div id="window" class="col-md-10 col-xs-height">
-				{foreach $messages as $message}
-					<div class="row">
-						<!--<div class="col-sm-2 col-xs-2 col-md-1">
-							<div class="img-responsive">
-								<img src="{$basePath}/images/{if $iterator->isEven()}user.png{else}user.gif{/if}" />
-							</div>
-						</div>-->
-						<div class="col-sm-10 col-xs-10 col-md-10 message" id="{$message->id}">
-							<div class="thumbnail">
-								<div class="caption">
-									<span class="author">{$message->ref('from_user_id')->name}</span>
-									<div class="pull-right">
-										{$message->time|date:'G:i:s j.n.'} 
-									</div>
+		<h1 class="col-xs-offset-3" n:block=title>{$room->title}</h1>
+		<div id="window" class="col-xs-12 col-md-10">
+			{foreach $messages as $message}
+				<div class="row">
+					<!--<div class="col-sm-2 col-xs-2 col-md-1">
+						<div class="img-responsive">
+							<img src="{$basePath}/images/{if $iterator->isEven()}user.png{else}user.gif{/if}" />
+						</div>
+					</div>-->
+					<div class="col-sm-12 col-xs-12 col-md-11 message" id="{$message->id}">
+						<div class="thumbnail">
+							<div class="caption">
+								<span class="author">{$message->ref('from_user_id')->name}</span>
+								<div class="pull-right">
+									{$message->time|date:'G:i:s j.n.'} 
 								</div>
-								<p>{$message->message}</p>
 							</div>
+							<p>{$message->message}</p>
 						</div>
 					</div>
-				{/foreach}
-			</div>
-			<div id="side" class="col-md-2 visible-lg visible-md col-xs-height">
-				<div class="panel panel-default">
-					<div class="panel-heading">
-						<h4>Uživatelé v této místnosti</h4>
-					</div>
-					<div class="panel-body">
-						{foreach $users as $user}
-							<p>{$user->ref('user_id')->name}</p>
-						{/foreach}
-					</div>
+				</div>
+			{/foreach}
+		</div>
+		<div id="side" class="col-md-2 visible-lg visible-md">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h4>Uživatelé v této místnosti</h4>
+				</div>
+				<div class="panel-body">
+					{foreach $users as $user}
+						<p>{$user->ref('user_id')->name}</p>
+					{/foreach}
 				</div>
 			</div>
 		</div>

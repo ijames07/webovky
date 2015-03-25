@@ -38,7 +38,7 @@ function formatDate(date) {
 }
 
 function postMessage(msg, author, time) {
-	$('#window').prepend('<div class="row"><div class="col-sm-10 col-xs-10 col-md-10 message">' +
+	$('#window').prepend('<div class="row"><div class="col-sm-12 col-xs-12 col-md-11 message">' +
 		'<div class="thumbnail">'+
 		'	<div class="caption"><span class="author">' + author + '</span>' +
 		'		<div class="pull-right">' + time +

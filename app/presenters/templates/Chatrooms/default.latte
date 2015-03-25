@@ -1,5 +1,11 @@
 {block content}
 <div class='container'>
+	<div class="row">
+		<div class="col-sm-offset-5">
+			<a href="{link Chatrooms:create}" class="btn btn-default" style="margin-bottom:5px;">Vytvořit chatovací místnost</a>
+		</div>
+	</div>
+	
 	<div class='row'>
 		<table class='table table-striped table-hover'>
 			<tr>
@@ -9,11 +15,11 @@
 			</tr>
 			<tbody>
 			{foreach $rooms as $room}
-				<tr {if $room->lock == 't'}class='danger'{/if}>
+				<tr{if $room->lock == 't' && !in_array($room->id, $in_room)} class='danger'{/if}>
 					<td>{$room->title}</td>
 					<td>{$room->description}</td>
 					<td>
-						{if $room->lock == 'f' || $in_room == $room->id}
+						{if $room->lock == 'f' || in_array($room->id, $in_room)}
 							<a href='{link Chatrooms:room, $room->id}' class='btn btn-default' role='button'><span class='glyphicon glyphicon-hand-right'></span> Vstoupit</a>
 						{else}
 						<a href='' data-toggle='modal' data-target='#{$room->id}' class='btn btn-default' role='button'><span class='glyphicon glyphicon-lock'></span> Vstoupit</a>
