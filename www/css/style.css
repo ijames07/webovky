@@ -24,3 +24,11 @@ body {
 	position: fixed;
 	min-width: 100%;
 }
+
+.privF {
+	background: lime;
+}
+
+.privT{
+	background: yellow;
+}

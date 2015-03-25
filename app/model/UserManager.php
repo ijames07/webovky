@@ -83,6 +83,15 @@ class UserManager extends Nette\Object implements Nette\Security\IAuthenticator
 			throw new DuplicateNameException;
 		}
 	}
+	
+	/** @return int */
+	public function getIDByName($name) {
+		if ($name == '') {
+			return;
+		}
+		return $this->database->table(self::TABLE_NAME)
+				->where(self::COLUMN_NAME, $name)->fetch()->id;
+	}
 
 }
 

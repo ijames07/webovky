@@ -48,17 +48,22 @@ class ChatroomsPresenter extends \App\Presenters\BasePresenter {
             $this->terminate();
         }
 
-        // ziskej nove zpravy od posledni kontrolyn ovych zprav
-        $messages = $this->context->getService('messagesService')->getNewMessages($room, $in_room->last_message);
+        // ziskej nove zpravy od posledni kontroly novych zprav
+        $messages = $this->context->getService('messagesService')->getNewMessages($room, $this->getUser()->getId(), $in_room->last_message);
         // aktualizuj posledni precteni zprav
         $this->context->getService('roomsService')->updateRoomLastMsg($this->getUser()->getId(), $room);
         $returnMessages = array();
         // fetchni zpravy do jednoho pole
         foreach ($messages as $msg) {
+			$to = null;
+			if (!empty($msg->to_user_id)) {
+				$to = $msg->ref('to_user_id')->name;
+			}
             array_push($returnMessages, array(
                 'from'  => $msg->ref('from_user_id')->name,
                 'time'  => date('G:i:s j.n.', strtotime($msg->time)),
-                'msg'   => $msg->message
+                'msg'   => $msg->message,
+				'to'	=> $to
             ));
         }
         // zadna nova zprava, konec
@@ -102,13 +107,13 @@ class ChatroomsPresenter extends \App\Presenters\BasePresenter {
 			}
 			$rooms->enterRoom($this->getUser()->getId(), $id);
 			$in_room = $rooms->getInRoom($this->getUser()->getId(), $id);
-			$this->template->messages = $messages->getLimitedMessages($id);
+			$this->template->messages = $messages->getLimitedMessages($id, $this->getUser()->getId());
 		} else {
 			// vratil se
 			// nactu nove zpravy vcetne posledni shlednute
-			$this->template->messages = $messages->getMessagesInRoom($id, $in_room->last_message);
+			$this->template->messages = $messages->getNewMessages($id, $this->getUser()->getId(), $in_room->last_message);
 			if (count($this->template->messages) < 5) {
-				$this->template->messages = $messages->getLimitedMessages($id);
+				$this->template->messages = $messages->getLimitedMessages($id, $this->getUser()->getId());
 			}
 			// aktualizuji posledni shlednou zpravu v teto mistnosti
 			$rooms->updateRoomLastMsg($this->getUser()->getId(), $id);
@@ -117,6 +122,7 @@ class ChatroomsPresenter extends \App\Presenters\BasePresenter {
 		// zjisti kdo je v mistnosti
 		$this->template->users = $rooms->getRoomUsers($id);
 		$this->template->nick = $in_room->ref('user_id')->name;
+		$this->template->user_id = $in_room->user_id;
 	}
 	
 	public function actionSend() {
@@ -126,6 +132,7 @@ class ChatroomsPresenter extends \App\Presenters\BasePresenter {
 		}
 		$msg = $this->request->getPost('msg');	
 		$room = $this->request->getPost('room');
+		$user = $this->request->getPost('to');
 		
 		// pokud je prazdna zprava => konec
 		if (empty($msg)) {
@@ -133,16 +140,21 @@ class ChatroomsPresenter extends \App\Presenters\BasePresenter {
 		}
 		
 		// je to septani mezi uzivateli nebo zprava do mistnosti
-		if (strpos($msg, '/w') === 0) {
+		if (!empty($user)) {
 			// soukroma zprava mezi 2 uzivateli
 			
+			$recipient = $this->context->getService('usersService')->getIDByName($user);
+			if (empty($recipient)) {
+				return;
+			}
+			$this->context->getService('messagesService')->createUserMsg($room, $this->getUser()->getId(), $recipient, $msg);
 		} else {
 			// verejna zprava pro vsechny v mistnosti
 			//$rooms = $this->context->getService('roomsService');
 			$user_id = $this->getUser()->getId();
 			//$in_room = $rooms->getInRoom($user_id, $room);
 			$this->context->getService('messagesService')
-					->createPublicMsg($user_id, $room, $msg);
+					->createPublicMsg($room, $user_id, $msg);
 		}
 		//$this->payload->message = $msg;
 		$this->terminate();

@@ -14,7 +14,7 @@ class Messages extends Nette\Object {
 	}
 	
 	/** return @return int */
-	public function createPublicMsg($uid, $room, $msg = '') {
+	public function createPublicMsg($room, $uid, $msg = '') {
 		return $this->database->table('message')->insert(array(
 			'from_user_id' => $uid,
 			'message' => $msg,
@@ -23,11 +23,12 @@ class Messages extends Nette\Object {
 	}
 	
 	/** return @return int */
-	public function createUserMsg($uid, $receiver, $msg = '') {
+	public function createUserMsg($room, $uid, $receiver, $msg = '') {
 		return $this->database->table('message')->insert(array(
-			'from_user_id' => $uid,
-			'message' => $msg,
-			'to_user_id' => $receiver
+			'chatroom_id'	=> $room,
+			'from_user_id'	=> $uid,
+			'message'		=> $msg,
+			'to_user_id'	=> $receiver
 		));
 	}
 	
@@ -37,28 +38,19 @@ class Messages extends Nette\Object {
 	}
 	
 	/** @return Nette\Database\Table\Selection */
-	public function getMessagesInRoom($id = '', $last = '01.01.1970') {
-		if ($id == '') {
-			return;
-		}
-		return $this->database->table('message')
-				->where('chatroom_id', $id)
-				->where('time >= ?', $last)
-				->order('time DESC');
-	}
-	
-	/** @return Nette\Database\Table\Selection */
-	public function getLimitedMessages($room, $count = 10) {
+	public function getLimitedMessages($room, $user, $count = 10) {
 		return $this->database->table('message')
 				->where('chatroom_id', $room)
+				->where('to_user_id IS NULL OR to_user_id = ? OR from_user_id = ?', $user, $user)
 				->order('time DESC')
 				->limit($count);
 	}
 	
 	/** @return Nette\Database\Table\Selection */
-	public function getNewMessages($room, $last = 'now()') {
+	public function getNewMessages($room, $user, $last = '1.1.1970') {
 		return $this->database->table('message')
 				->where('chatroom_id', $room)
+				->where('to_user_id IS NULL OR to_user_id = ? OR from_user_id = ?', $user, $user)
 				->where('time > ?', $last);
 	}
 }

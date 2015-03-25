@@ -14,14 +14,19 @@ $(function(){
 		}
 		$('#msg').val('');
 		var author = $('#name').val();
-
-		postMessage(msg, author, formatDate(new Date()));
+		if (msg.indexOf('/w') === 0) {
+			// ziskam jmeno ciloveho uzivatele
+			var to = msg.substring(3, msg.indexOf(' ', 3));
+			// vyexportuju jenom zpravu, + 1 pro preskoceni mezery za jmenem
+			msg = msg.substring(msg.indexOf(to) + to.length + 1, msg.length);
+		}
+		postMessage(msg, author, formatDate(new Date()), to);
 		var room = document.URL.substring(document.URL.lastIndexOf('/') + 1, document.URL.length);
 		var jqxhr = $.ajax({ 
 						method: 'POST',
 						url: "/chat/www/chatrooms/send",
 						cache: false,
-						data: { msg: msg, room: room }
+						data: { msg: msg, room: room, to: to }
 					});
 		/*var time = new Date();
 		$('#window').prepend('<div class="thumbnail"><p>[' + time.getHours() + ':' + ("0" + time.getMinutes()).slice(-2) + ':' + ('0' + time.getSeconds()).slice(-2) + '] Adam: ' + msg + '</p></div>');*/
@@ -37,8 +42,22 @@ function formatDate(date) {
 			+ ' ' + date.getDate() + '.' + (date.getMonth()+1) + '.';
 }
 
-function postMessage(msg, author, time) {
-	$('#window').prepend('<div class="row"><div class="col-sm-12 col-xs-12 col-md-11 message">' +
+function postMessage(msg, author, time, to) {
+	// jsem prijemce soukrome zpravy?
+	var me = $('#name').val();
+	if (to == me) {
+		cls = ' privT';
+		msg = author + ': ' + msg;
+		// je tato zprava pro vsechny?
+	} else if (to === undefined || to === null) {
+		cls = '';
+		// odesilam nekomu soukromou zpravu?
+	} else {
+		cls = ' privF';
+		msg = to + ': ' + msg;
+	}
+	$('#window').prepend('<div class="row"><div class="col-sm-12 col-xs-12 col-md-11 message' + 
+			cls + '">' +
 		'<div class="thumbnail">'+
 		'	<div class="caption"><span class="author">' + author + '</span>' +
 		'		<div class="pull-right">' + time +
@@ -71,7 +90,7 @@ function update() {
 				} catch (err) {
 					
 				}
-				postMessage(msg[i].msg, msg[i].from, msg[i].time);
+				postMessage(msg[i].msg, msg[i].from, msg[i].time, msg[i].to);
 			}
 		});
 }

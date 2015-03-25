@@ -26,7 +26,7 @@
 							<img src="{$basePath}/images/{if $iterator->isEven()}user.png{else}user.gif{/if}" />
 						</div>
 					</div>-->
-					<div class="col-sm-12 col-xs-12 col-md-11 message" id="{$message->id}">
+					<div n:class="$message->to_user_id ==  $user_id ? privT : empty($message->to_user_id) ?  : privF, col-sm-12, col-xs-12, col-md-11, message">
 						<div class="thumbnail">
 							<div class="caption">
 								<span class="author">{$message->ref('from_user_id')->name}</span>
@@ -34,7 +34,7 @@
 									{$message->time|date:'G:i:s j.n.'} 
 								</div>
 							</div>
-							<p>{$message->message}</p>
+							<p>{if !empty($message->to_user_id)}{$message->ref('to_user_id')->name}: {/if}{$message->message}</p>
 						</div>
 					</div>
 				</div>
