@@ -53,6 +53,14 @@ class Rooms extends Nette\Object {
 	}
 	
 	/** @return int */
+	public function leaveRoom($who, $where) {
+		return $this->database->table('in_chatroom')
+				->where('user_id', $who)
+				->where ('chatroom_id', $where)
+				->delete();
+	}
+	
+	/** @return int */
 	public function updateRoomLastMsg($id, $room, $time = 'now()') {
 		return $this->database->table('in_chatroom')
 				->where('user_id', $id)
