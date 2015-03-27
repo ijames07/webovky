@@ -25,10 +25,14 @@ body {
 	min-width: 100%;
 }
 
-.privF {
-	background: lime;
+.privF .thumbnail {
+	background-color: #DDD;
 }
 
-.privT{
-	background: yellow;
+.privT .thumbnail{
+	background: #00b3ee;
+}
+
+.author {
+	font-weight: bolder;
 }
