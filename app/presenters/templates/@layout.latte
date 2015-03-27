@@ -8,10 +8,11 @@
 <head>
 	<meta charset="utf-8">
 	<title>{ifset title}{include title|striptags} | {/ifset}Chat</title>
-	<link rel="stylesheet" href="{$basePath}/s/bootstrap/dist/css/bootstrap.min.css" />
-	<link rel="stylesheet" href="{$basePath}/s/bootstrap/dist/css/bootstrap-theme.min.css" />
+	<link rel="stylesheet" href="{$basePath}/bower_components/bootstrap/dist/css/bootstrap.min.css" />
+	<link rel="stylesheet" href="{$basePath}/bower_components/bootstrap/dist/css/bootstrap-theme.min.css" />
+	<link rel="stylesheet" media="screen,projection,tv" href="{$basePath}/bower_components/toastr/toastr.min.css" />
 	<link rel="stylesheet" href="{$basePath}/css/style.css">
-	<script src="{$basePath}/s/respond/dest/respond.min.js"></script>
+	<script src="{$basePath}/bower_components/respond/dest/respond.min.js"></script>
 	<link rel="shortcut icon" href="{$basePath}/favicon.ico">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	{block head}{/block}
@@ -48,10 +49,26 @@
 	{include content}
 
 
-	<script src="{$basePath}/s/jquery/dist/jquery.min.js"></script>
+	<script src="{$basePath}/bower_components/jquery/dist/jquery.min.js"></script>
 	<script src="//nette.github.io/resources/js/netteForms.min.js"></script>
-	<script src="{$basePath}/s/bootstrap/dist/js/bootstrap.min.js"></script>
+	<script src="{$basePath}/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+	<script src="{$basePath}/bower_components/toastr/toastr.min.js"></script>
 	<script src="{$basePath}/js/main.js"></script>
 	{ifset scripts}{include scripts}{/ifset}
+	{if !empty($flashes)}
+		<script>
+		{foreach $flashes as $flash}
+			{if $flash->type == 'info'}
+				toastr.info({$flash->message});
+			{elseif $flash->type == 'success'}
+				toastr.success({$flash->message});
+			{elseif $flash->type == 'error'}
+				toastr.error({$flash->message});
+			{else}
+				toastr.warning({$flash->message});
+			{/if}
+		{/foreach}
+	</script>
+	{/if}
 </body>
 </html>
