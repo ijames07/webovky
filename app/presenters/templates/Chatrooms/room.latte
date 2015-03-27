@@ -26,7 +26,7 @@
 							<img src="{$basePath}/images/{if $iterator->isEven()}user.png{else}user.gif{/if}" />
 						</div>
 					</div>-->
-					<div n:class="$message->to_user_id ==  $user_id ? privT : empty($message->to_user_id) ?  : privF, col-sm-12, col-xs-12, col-md-11, message">
+					<div n:class="$message->to_user_id ==  $user_id ? privT, !empty($message->to_user_id) || $message->from_user_id == $user_id ? privF, col-sm-12, col-xs-12, col-md-11, message">
 						<div class="thumbnail">
 							<div class="caption">
 								<span class="author">{$message->ref('from_user_id')->name}</span>
@@ -34,13 +34,13 @@
 									{$message->time|date:'G:i:s j.n.'} 
 								</div>
 							</div>
-							<p>{if !empty($message->to_user_id)}{$message->ref('to_user_id')->name}: {/if}{$message->message}</p>
+							<p>{if !empty($message->to_user_id)}<strong>{$message->ref('to_user_id')->name}</strong>: {/if}{$message->message}</p>
 						</div>
 					</div>
 				</div>
 			{/foreach}
 		</div>
-		<div id="side" class="col-md-2 visible-lg visible-md">
+		<div id="side" class="col-md-2 col-xs-12">
 			<div class="panel panel-default">
 				<div class="panel-heading">
 					<h4>Uživatelé v této místnosti</h4>
@@ -49,6 +49,7 @@
 					{foreach $users as $user}
 						<p>{$user->ref('user_id')->name}</p>
 					{/foreach}
+					<a class="btn btn-default" href="{link Chatrooms:leave $room->id}">Opustit místnost</a>
 				</div>
 			</div>
 		</div>
