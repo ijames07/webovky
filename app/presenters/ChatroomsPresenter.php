@@ -32,6 +32,18 @@ class ChatroomsPresenter extends \App\Presenters\BasePresenter {
 		}
 	}
 	
+	public function actionLeave($id = '') {
+		if ($id == '') {
+			return;
+		}
+		if ($this->context->getService('roomsService')->leaveRoom($this->getUser()->getId(), $id) == 1) {
+			$this->flashMessage('Opustil jsi místnost.', 'success');
+		} else {
+			$this->flashMessage('Nejsi v této místnosti. Nemůžeš z ní odejít', 'error');
+		}
+		$this->redirect('Chatrooms:');
+	}
+	
     public function actionUpdate() {
         if (!$this->isAjax()) {
             $this->terminate();
