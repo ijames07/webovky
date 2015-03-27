@@ -47,14 +47,17 @@ function postMessage(msg, author, time, to) {
 	var me = $('#name').val();
 	if (to == me) {
 		cls = ' privT';
-		msg = author + ': ' + msg;
-		// je tato zprava pro vsechny?
+		msg = '<strong>' + author + '</strong>' + ': ' + msg;
+		// odeslal jsem ji ja?
+	} else if (author == me) {
+		cls = ' privF';
+		// je tato zprava od nekoho mimo me pro vsechny?
 	} else if (to === undefined || to === null) {
 		cls = '';
 		// odesilam nekomu soukromou zpravu?
 	} else {
 		cls = ' privF';
-		msg = to + ': ' + msg;
+		msg = '<strong>' + to + '</strong>' + ': ' + msg;
 	}
 	$('#window').prepend('<div class="row"><div class="col-sm-12 col-xs-12 col-md-11 message' + 
 			cls + '">' +
