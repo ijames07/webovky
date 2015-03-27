@@ -9,5 +9,5 @@ vendor/*
 !web.config
 app/config/config.local.neon
 
-www/s/*
+www/bower_components/*
 nbproject/*
