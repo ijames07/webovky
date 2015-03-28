@@ -11,6 +11,7 @@
 			<tr>
 				<th>Název</th>
 				<th>Popis</th>
+				<th>Moderátor</th>
 				<th></th>
 			</tr>
 			<tbody>
@@ -18,6 +19,7 @@
 				<tr{if $room->lock == 't' && !in_array($room->id, $in_room)} class='danger'{/if}>
 					<td>{$room->title}</td>
 					<td>{$room->description}</td>
+					<td>{$room->ref('owner_user_id')->name}</td>
 					<td>
 						{if $room->lock == 'f' || in_array($room->id, $in_room)}
 							<a href='{link Chatrooms:room, $room->id}' class='btn btn-default' role='button'><span class='glyphicon glyphicon-hand-right'></span> Vstoupit</a>

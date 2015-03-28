@@ -80,6 +80,48 @@ class Rooms extends Nette\Object {
 				->order('last_message DESC');
 	}
 	
+	/** @return boolean */
+	public function isModerator($user = '', $room = '') {
+		if ($user == '' || $room == '') {
+			return;
+		}
+		return $this->database->table('room')
+				->where('owner_user_id', $user)
+				->where('id', $room)
+				->count();
+	}
+	
+	/** @return Nette\Database\Table\ActiveRow */
+	public function getCandidate($chatroom = '') {
+		if ($chatroom == '') {
+			return;
+		}
+		return $this->database->table('in_chatroom')
+				->where('chatroom_id', $chatroom)
+				->order('entered ASC')
+				->limit(1)
+				->fetch();
+	}
+	
+	/** @return int Number of updated chatrooms */
+	public function setModerator($user = '', $room = '') {
+		if ($user == '' || $room == '') {
+			return;
+		}
+		return $this->database->table('room')
+				->where('id', $room)
+				->update(array(
+					'owner_user_id' => $user
+				));
+	}
+	
+	/** @return  int Number of deleted chatrooms */
+	public function deleteRoom($room) {
+		return $this->database->table('room')
+				->where('id', $room)
+				->delete();
+	}
+	
 	/** @return Nette\Database\Table\ActiveRow */
 	public function createRoom($data) {
 		if (isset($data["locked"])  && $data["locked"] == TRUE && isset($data["password"])) {
