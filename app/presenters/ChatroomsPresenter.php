@@ -83,10 +83,10 @@ class ChatroomsPresenter extends \App\Presenters\BasePresenter {
 		
         // ziskam activeRow s podrobnostmi
         $in_room = $rooms->getInRoom($user_id, $room);
-        if (is_null($in_room)) {
+        if ($in_room === false) {
 			
             // nema tu co delat, neni clenem teto mistnosti
-            $this->terminate();
+            $this->sendResponse(new \Nette\Application\Responses\JsonResponse(array('kick' => 1)));
         }
 
         // ziskej nove zpravy od posledni kontroly novych zprav
@@ -128,10 +128,21 @@ class ChatroomsPresenter extends \App\Presenters\BasePresenter {
 		
 		$rooms = $this->context->getService('roomsService');
 		$user_id = $this->getUser()->getId();
-		$this->template->room = $rooms->get($id);
+		$room = $rooms->get($id);
+		
+		// zpracovani formulare vlastnosti mistnosti pro moderatora
+		if ($room->owner_user_id == $user_id) {
+			$this['formChatroom']->addSubmit('send', 'Upravit');
+			$this["formChatroom"]->setDefaults(array(
+				'title'			=>	$room->title,
+				'description'	=>	$room->description,
+				'locked'		=>	$room->lock == 't' ? true : false
+			));
+			$this["formChatroom"]->addHidden('chatroom_id', $room->id);
+		}
 		
 		// je zadano id mistnosti, ktera existuje?
-		if (empty($this->template->room)) {
+		if (empty($room)) {
 			$this->flashMessage('Litujeme, ale tato místnost byla již smazána', 'info');
 			$this->redirect('Chatrooms:');
 		}
@@ -146,9 +157,9 @@ class ChatroomsPresenter extends \App\Presenters\BasePresenter {
 			// PRVNI VSTUP
 			// Pokud je zamknuta mistnost a zaroven neni uzivatel v teto mistnosti
 			// zkontroluj jeho zadane heslo
-			if ($this->template->room->lock == 't') {
+			if ($room->lock == 't') {
 				$pw = $this->request->getPost('pw');
-				if (!strcmp($pw, $this->template->room->password) == 0) {
+				if (!strcmp($pw, $room->password) == 0) {
 					$this->flashMessage('Bylo zadáno špatné heslo', 'error');
 					$this->redirect('Chatrooms:');
 				}
@@ -171,6 +182,15 @@ class ChatroomsPresenter extends \App\Presenters\BasePresenter {
 		$this->template->users = $rooms->getRoomUsers($id);
 		$this->template->nick = $in_room->ref('user_id')->name;
 		$this->template->user_id = $user_id;
+		$this->template->room = $room;
+	}
+	
+	public function actionKick($id = '', $room = '') {
+		if ($id == '' || $room == '') {
+			return;
+		}
+		$this->context->getService('roomsService')->kick($id, $room);
+		$this->redirect('Chatrooms:room', $room);
 	}
 	
 	public function actionSend() {
@@ -209,33 +229,40 @@ class ChatroomsPresenter extends \App\Presenters\BasePresenter {
 	}
 	
 	public function actionCreate() {
-		
+		$this['formChatroom']->addSubmit('send', 'Vytvořit');
 	}
 	
-	protected function createComponentCreateChatroom() {
+	protected function createComponentFormChatroom() {
 		$form = new Form;
 		$form->setRenderer(new \Instante\Bootstrap3Renderer\BootstrapRenderer());
 		$form->addText('title', 'Název')
 				->addRule(Form::FILLED, 'Zadejte název místnosti');
 		$form->addText('description', 'Popis')
 				->addRule(Form::FILLED, 'Zadejte popis místnosti');
-		$form->addCheckbox('locked', 'Uzamknutá?');
-		$form->addPassword('password', 'Heslo pro vstup')
-				->setOption('description', 'Vyžadováno pouze pokud se jedná o zamknutou místnost')
+		$form->addCheckbox('locked', 'Zamknout');
+		$form->addPassword('password', 'Heslo')
 				->addConditionOn($form['locked'], Form::EQUAL, TRUE)
 					->setRequired('Napiš heslo pro vstup do místnosti');
-		$form->addSubmit('send', 'Vytvořit');
-		$form->onSuccess[] = callback($this, 'createChatroomSuccess');
+		$form->onSuccess[] = callback($this, 'formChatroomSuccess');
 		return $form;
 	}
 	
-	public function createChatroomSuccess(Form $form) {
+	public function formChatroomSuccess(Form $form) {
 		$values = $form->getValues();
-		$values["user_id"] = $this->getUser()->getId();
+		$user_id = $this->getUser()->getId();
+		$values["user_id"] = $user_id;
 		$chatrooms = $this->context->getService('roomsService');
-		$newRoom = $chatrooms->createRoom($values);
-		$chatrooms->enterRoom($this->getUser()->getId(), $newRoom->id);
-		$this->redirect('Chatrooms:room', $newRoom->id);
+		if (isset($values["chatroom_id"])) {
+			// update
+			$chatrooms->updateRoom($values);
+			$id = $values["chatroom_id"];
+		} else {
+			// insert
+			$newRoom = $chatrooms->createRoom($values);
+			$chatrooms->enterRoom($user_id, $newRoom->id);
+			$id = $newRoom->id;
+		}
+		$this->redirect('Chatrooms:room', $id);
 	}
 }
 		

@@ -36,6 +36,10 @@ $(function(){
 	});
 });
 
+if ((document.location.search).indexOf('kick') !== -1) {
+	toastr.warning('Byl jsi vyhozen z místnosti');
+}
+
 function formatDate(date) {
 	return date.getHours() + ':' + ('00' + date.getMinutes()).slice(-2) + ':'
 			+ ('00' + date.getSeconds()).slice(-2)
@@ -81,6 +85,10 @@ function update() {
 					data: { room: id }
 				})
 		.done(function(msg) {
+			if (typeof msg.kick !== 'undefined') {
+				clearInterval(aktualizuj);
+				window.location.href = '/chat/www/chatrooms?kick=yes';
+			}
 			var me = $('#name').val();
 			for (i = 0; i < msg.length; i++) {
 				var message = $('.message').get(0);

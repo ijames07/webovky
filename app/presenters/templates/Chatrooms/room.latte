@@ -1,21 +1,15 @@
 {block content}
-<div class="container-fluid">		
+<div class="container">		
 	<input type="hidden" id="name" value="{$nick}" />
 	<div id="input" class="row vstup">
-		<div class="col-xs-9 col-sm-10 col-md-9">
-			<!--<div class="input-group">
-				<input type="text" class="form-control" placeholder="Napiš zprávu ..." id="msg" maxlength="255">
-				<span class="input-group-btn">
-					<button class="btn btn-default" type="button" id="send">Odeslat</button>
-				</span>
-			</div>-->
+		<div class="col-xs-9 col-sm-8 col-md-7">
 			<input type="text" class="form-control" placeholder="Napiš zprávu ..." id="msg" maxlength="255">
-					</div>
+		</div>
 		<div class="col-xs-3 col-sm-2 col-md-1">
 			<button class="btn btn-default" type="button" id="send">Odeslat</button>
 		</div>
 
-	</div>
+	</div><!-- formular pro psani zprav -->
 	<div class="row" style="margin-top: 60px">
 		<h1 class="col-xs-offset-3" n:block=title>{$room->title}</h1>
 		<div id="window" class="col-xs-12 col-md-10">
@@ -39,27 +33,57 @@
 					</div>
 				</div>
 			{/foreach}
-		</div>
+		</div><!-- panel pro zpravy -->
 		<div id="side" class="col-md-2 col-xs-12">
+			{if $user_id == $room->owner_user_id}
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h4>Uživatelé v této místnosti</h4>
+					<h4>Moderátor</h4>
 				</div>
 				<div class="panel-body">
 					{foreach $users as $user}
-						<p>{$user->ref('user_id')->name}</p>
+						{if $user_id == $user->user_id}
+						<p><span class="glyphicon glyphicon-eye-open"></span> {$user->ref('user_id')->name}<p>
+						{else}
+						<p><a onclick="return confirm('Opravdu vyhodit?');" href="{link Chatrooms:kick $user->user_id, $room->id}">{$user->ref('user_id')->name}</a></p>
+						{/if}
 					{/foreach}
 					<a class="btn btn-default" href="{link Chatrooms:leave $room->id}">Opustit místnost</a>
 				</div>
-			</div>
-		</div>
+			</div><!-- Nastroje moderatora -->
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h4>Místnost</h4>
+				</div>
+				<div class="panel-body">
+					{control formChatroom}
+				</div>
+			</div><!-- vlastnosti mistnosti -->
+			{else}
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h4>Uživatelé</h4>
+				</div>
+				<div class="panel-body">
+					{foreach $users as $user}
+						{if $user->user_id == $room->owner_user_id}
+							<p><span class="glyphicon glyphicon-eye-open"></span> {$user->ref('user_id')->name}<p>
+						{else}
+						<p>{$user->ref('user_id')->name}</p>
+						{/if}
+					{/foreach}
+					<a class="btn btn-default" href="{link Chatrooms:leave $room->id}">Opustit místnost</a>
+				</div>
+			</div><!-- Bocni panel obycejneho uzivatele -->
+			{/if}
+		</div><!-- bocni panel -->
 	</div>
 </div>
 {/block}
 
 {block scripts}
 <script type="text/javascript">
-	setInterval(function() {
+	var aktualizuj = setInterval(function() {
 		update();
 	}, 2500);
 </script>

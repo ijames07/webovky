@@ -77,7 +77,7 @@ class Rooms extends Nette\Object {
 		}
 		return $this->database->table('in_chatroom')
 				->where('chatroom_id', $id)
-				->order('last_message DESC');
+				->order('user.name ASC');
 	}
 	
 	/** @return boolean */
@@ -115,6 +115,17 @@ class Rooms extends Nette\Object {
 				));
 	}
 	
+	/** @return int Number of kicked users */
+	public function kick($user, $room) {
+		if (is_null($user) || is_null($room)) {
+			return;
+		}
+		return $this->database->table('in_chatroom')
+				->where('user_id', $user)
+				->where('chatroom_id', $room)
+				->delete();
+	}
+	
 	/** @return  int Number of deleted chatrooms */
 	public function deleteRoom($room) {
 		return $this->database->table('room')
@@ -138,6 +149,29 @@ class Rooms extends Nette\Object {
 				'owner_user_id'	=> $data["user_id"],
 				'description'	=> $data["description"]
 			));
+		}
+	}
+	
+	/** @return int */
+	public function updateRoom($data) {
+		if (isset($data["locked"])  && $data["locked"] == TRUE && isset($data["password"])) {
+			return $this->database->table('room')
+					->where('id', $data["chatroom_id"])
+					->update(array(
+						'title'			=> $data["title"],
+						'lock'			=> 't',
+						'description'	=> $data["description"] ,
+						'password'		=> $data["password"]
+					));
+		} else {
+			return $this->database->table('room')
+					->where('id', $data["chatroom_id"])
+					->update(array(
+						'title'			=> $data["title"],
+						'description'	=> $data["description"],
+						'lock'			=> 'f',
+						'password'		=> null
+					));
 		}
 	}
 }
