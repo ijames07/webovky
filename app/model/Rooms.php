@@ -23,13 +23,14 @@ class Rooms extends Nette\Object {
 		return $this->database->table('room')->get($id);
 	}
 	
-	/** @return Nette\Database\Table\ActiveRow */
+	/** @return Nette\Database\Table\Selection */
 	public function inRooms($user = '') {
 		if ($user == '') {
 			return;
 		}
 		return $this->database->table('in_chatroom')
-				->where('user_id', $user);
+				->where('user_id', $user)
+				->order('entered ASC');
 	}
 	
 	/** @return Nette\Database\Table\ActiveRow */
