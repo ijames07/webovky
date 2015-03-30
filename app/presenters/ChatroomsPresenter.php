@@ -15,6 +15,7 @@ class ChatroomsPresenter extends \App\Presenters\BasePresenter {
 			}
 			$this->redirect('Sign:in', array('backlink' => $this->storeRequest()));
 		}
+		$this->template->inRooms = $this->context->getService('roomsService')->inRooms($this->getUser()->getId());
 	}
 	
 	public function actionDefault() {
@@ -101,10 +102,10 @@ class ChatroomsPresenter extends \App\Presenters\BasePresenter {
         foreach ($messages as $msg) {
 			$to = null;
 			if (!empty($msg->to_user_id)) {
-				$to = $msg->ref('to_user_id')->name;
+				$to = $msg->ref('to_user_id')->nickname;
 			}
             array_push($returnMessages, array(
-                'from'  => $msg->ref('from_user_id')->name,
+                'from'  => $msg->ref('from_user_id')->nickname,
                 'time'  => date('G:i:s j.n.', strtotime($msg->time)),
                 'msg'   => $msg->message,
 				'to'	=> $to
@@ -180,7 +181,7 @@ class ChatroomsPresenter extends \App\Presenters\BasePresenter {
 		
 		// zjisti kdo je v mistnosti
 		$this->template->users = $rooms->getRoomUsers($id);
-		$this->template->nick = $in_room->ref('user_id')->name;
+		$this->template->nick = $in_room->ref('user_id')->nickname;
 		$this->template->user_id = $user_id;
 		$this->template->room = $room;
 	}
@@ -211,20 +212,18 @@ class ChatroomsPresenter extends \App\Presenters\BasePresenter {
 		if (!empty($user)) {
 			// soukroma zprava mezi 2 uzivateli
 			
-			$recipient = $this->context->getService('usersService')->getIDByName($user);
+			$recipient = $this->context->getService('usersService')->getIDByNick($user);
 			if (empty($recipient)) {
 				return;
 			}
-			$this->context->getService('messagesService')->createUserMsg($room, $this->getUser()->getId(), $recipient, $msg);
+			$this->context->getService('messagesService')
+					->createUserMsg($room, $this->getUser()->getId(), $recipient, $msg);
 		} else {
 			// verejna zprava pro vsechny v mistnosti
-			//$rooms = $this->context->getService('roomsService');
 			$user_id = $this->getUser()->getId();
-			//$in_room = $rooms->getInRoom($user_id, $room);
 			$this->context->getService('messagesService')
 					->createPublicMsg($room, $user_id, $msg);
 		}
-		//$this->payload->message = $msg;
 		$this->terminate();
 	}
 	
