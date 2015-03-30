@@ -31,15 +31,20 @@
 					</button>
 				</div>
 				<div class="collapse navbar-collapse" id="collapse">
-					<ul class="nav navbar-nav navbar-left">
+					<ul class="nav navbar-nav">
 						{if $user->isLoggedIn()}
 							<li n:class="$presenter->isLinkCurrent('Chatrooms:') ? active, navbar-left"><a href="{plink Chatrooms:}">Místnosti</a></li>
-							<li class="navbar-right"></li>
+							{foreach $inRooms as $room}
+							<li n:class="$presenter->isLinkCurrent('Chatrooms:room', $room->chatroom_id) ? active, navbar-left"><a n:href="Chatrooms:room $room->chatroom_id">{$room->ref('chatroom_id')->title|trim:10}</a></li>
+							{/foreach}
+							<li class="navbar-right visible-lg visible-md"></li>
+							<li n:class="$presenter->isLinkCurrent('Profiles:') ? active, navbar-right, visible-xs, visible-sm"><a href="{plink Profiles:}">Profil</a></li>
 							<li class="navbar-right"><a href="{plink Sign:out}">Odhlásit</a></li>
+							<li n:class="$presenter->isLinkCurrent('Profiles:') ? active, navbar-right, visible-lg, visible-md"><a href="{plink Profiles:}">Profil</a></li>
 						{else}
 							<li n:class="$presenter->isLinkCurrent('Homepage:') ? active, navbar-left"><a href="{plink Homepage:}">Domů</a></li>
 							<li n:class="$presenter->isLinkCurrent('Sign:in') ? active, navbar-left"><a href="{plink Sign:in}">Přihlásit</a></li>
-							<li n:class="$presenter->isLinkCurrent('Sign:register') ? active, navbar-left"><a href="{plink Sign:register}">Registrovat</a></li>
+							<li n:class="$presenter->isLinkCurrent('Profiles:register') ? active, navbar-left"><a href="{plink Profiles:register}">Registrovat</a></li>
 						{/if}
 					</ul>
 				</div>
