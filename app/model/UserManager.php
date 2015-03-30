@@ -15,7 +15,7 @@ class UserManager extends Nette\Object implements Nette\Security\IAuthenticator
 	const
 		TABLE_NAME = 'user',
 		COLUMN_ID = 'id',
-		COLUMN_LOGIN = 'login',
+		COLUMN_NICK = 'nickname',
 		COLUMN_NAME = 'name',
 		COLUMN_SURNAME = 'surname',
 		COLUMN_GENDER = 'gender',
@@ -41,9 +41,9 @@ class UserManager extends Nette\Object implements Nette\Security\IAuthenticator
 	 */
 	public function authenticate(array $credentials)
 	{
-		list($username, $password) = $credentials;
+		list($email, $password) = $credentials;
 
-		$row = $this->database->table(self::TABLE_NAME)->where(self::COLUMN_LOGIN, $username)->fetch();
+		$row = $this->database->table(self::TABLE_NAME)->where(self::COLUMN_EMAIL, $email)->fetch();
 
 		if (!$row) {
 			throw new Nette\Security\AuthenticationException('The username is incorrect.', self::IDENTITY_NOT_FOUND);
@@ -72,7 +72,7 @@ class UserManager extends Nette\Object implements Nette\Security\IAuthenticator
 	public function add($user) {
 		try {
 			return $this->database->table(self::TABLE_NAME)->insert(array(
-				self::COLUMN_LOGIN			=>	$user->login,
+				self::COLUMN_NICK			=>	$user->nick,
 				self::COLUMN_PASSWORD_HASH	=>	Passwords::hash($user->password),
 				self::COLUMN_EMAIL			=>	$user->email,
 				self::COLUMN_GENDER			=>	intval($user->gender) == 0 ? 'f' : 'm',
@@ -85,17 +85,55 @@ class UserManager extends Nette\Object implements Nette\Security\IAuthenticator
 	}
 	
 	/** @return int */
-	public function getIDByName($name) {
+	public function getIDByNick($name) {
 		if ($name == '') {
 			return;
 		}
 		return $this->database->table(self::TABLE_NAME)
 				->where(self::COLUMN_NAME, $name)->fetch()->id;
 	}
+	
+	/** @return Nette\Database\Table\ActiveRow */
+	public function get($id = '') {
+		if ($id == '') {
+			return;
+		}
+		return $this->database->table(self::TABLE_NAME)
+				->get($id);
+	}
+	
+	/** @return int */
+	public function update($data) {
+		try {
+			if (!empty($data["newpw1"])) {
+				return $this->database->table(self::TABLE_NAME)
+						->where('id', $data["user_id"])
+						->update(array(
+							self::COLUMN_EMAIL	=>	$data['email'],
+							self::COLUMN_NAME	=>	$data['name'],
+							self::COLUMN_SURNAME	=>	$data['surname'],
+							self::COLUMN_NICK	=>	$data['nick'],
+							self::COLUMN_PASSWORD_HASH	=> Passwords::hash($data["newpw1"])
+						));
+			} else {
+				return $this->database->table(self::TABLE_NAME)
+					->where('id', $data["user_id"])
+					->update(array(
+						self::COLUMN_EMAIL	=>	$data['email'],
+						self::COLUMN_NAME	=>	$data['name'],
+						self::COLUMN_SURNAME	=>	$data['surname'],
+						self::COLUMN_NICK	=>	$data['nick']
+					));
+			}
+		} catch (Nette\Database\UniqueConstraintViolationException $e) {
+			throw new DuplicateNameException;
+		}
+	}
 
 }
 
 
 
-class DuplicateNameException extends \Exception
-{}
+class DuplicateNameException extends \Exception {
+	
+}
