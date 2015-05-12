@@ -110,7 +110,7 @@ class ProfilesPresenter extends \App\Presenters\BasePresenter {
 	public function userFormSuccess(Nette\Application\UI\Form $form) {
 		$values = $form->getValues();
 		$result = $this->context->getService('usersService')->add($values);
-		if (isset($result->id)) {
+		if (!empty($result->id)) {
 			$this->flashMessage('Registrace se zdařila, nyní se můžeš přihlásit.', 'success');
 			$this->redirect('Sign:in');
 		} else {

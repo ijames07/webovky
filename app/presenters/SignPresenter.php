@@ -10,6 +10,10 @@ use Nette,
  * Sign in/out presenters.
  */
 class SignPresenter extends BasePresenter {
+	
+	/** @persistent */
+	public $backlink = '';
+	
 	/*
 	public function startup() {
 		parent::startup();
@@ -46,7 +50,7 @@ class SignPresenter extends BasePresenter {
 		try {
 			$this->getUser()->login($values->email, $values->password);
 			$this->flashMessage("Přihlášení proběhlo úspěšně", 'success');
-			//$this->restoreRequest($this->backlink);
+			$this->restoreRequest($this->backlink);
 			$this->redirect('Chatrooms:');
 		} catch (Nette\Security\AuthenticationException $e) {
 			$form->addError($e->getMessage());

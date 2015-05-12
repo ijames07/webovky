@@ -137,7 +137,7 @@ class ChatroomsPresenter extends \App\Presenters\BasePresenter {
 			$this["formChatroom"]->setDefaults(array(
 				'title'			=>	$room->title,
 				'description'	=>	$room->description,
-				'locked'		=>	$room->lock == 't' ? true : false
+				'lock'		=>	$room->lock == 't' ? 't' : 'f'
 			));
 			$this["formChatroom"]->addHidden('chatroom_id', $room->id);
 		}

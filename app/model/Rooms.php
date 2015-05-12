@@ -9,18 +9,31 @@ class Rooms extends Nette\Object {
 	/** @var Nette\Database\Inject */
 	private $database;
 	
+	const TABLE_ROOM = 'room',
+			TABLE_INCHATROOM = 'in_chatroom',
+			COLUMN_USER = 'user_id',
+			COLUMN_ENTERED = 'entered',
+			COLUMN_LAST_MSG = 'last_message',
+			COLUMN_CHATROOM_ID = 'chatroom_id',
+			COLUMN_OWNER = 'owner_user_id',
+			COLUMN_PASSWORD = 'password',
+			COLUMN_TITLE = 'title',
+			COLUMN_LOCK = 'lock',
+			COLUMN_DESCRIPTION = 'description',
+			COLUMN_ID = 'id';
+	
 	public function __construct(Nette\Database\Context $database) {
 		$this->database = $database;
 	}
 	
 	/** @return Nette\Database\Table\Selection */
 	public function getAll() {
-		return $this->database->table("room");
+		return $this->database->table(self::TABLE_ROOM);
 	}
 	
 	/** @return Nette\Database\Table\ActiveRow */
 	public function get($id = '') {
-		return $this->database->table('room')->get($id);
+		return $this->database->table(self::TABLE_ROOM)->get($id);
 	}
 	
 	/** @return Nette\Database\Table\Selection */
@@ -28,9 +41,9 @@ class Rooms extends Nette\Object {
 		if ($user == '') {
 			return;
 		}
-		return $this->database->table('in_chatroom')
-				->where('user_id', $user)
-				->order('entered ASC');
+		return $this->database->table(self::TABLE_INCHATROOM)
+				->where(self::COLUMN_USER, $user)
+				->order(self::COLUMN_ENTERED . ' ASC');
 	}
 	
 	/** @return Nette\Database\Table\ActiveRow */
@@ -38,36 +51,36 @@ class Rooms extends Nette\Object {
 		if ($id == '' || $room == '') {
 			return;
 		}
-		return $this->database->table('in_chatroom')
-				->where('user_id', $id)
-				->where('chatroom_id', $room)
+		return $this->database->table(self::TABLE_INCHATROOM)
+				->where(self::COLUMN_USER, $id)
+				->where(self::COLUMN_CHATROOM_ID, $room)
 				->fetch();
 	}
 	
 	/** @return int */
 	public function enterRoom($who, $where) {
-		return $this->database->table('in_chatroom')
+		return $this->database->table(self::TABLE_INCHATROOM)
 				->insert(array(
-					'user_id'		=>	$who,
-					'chatroom_id'	=>	$where
+					self::COLUMN_USER		=>	$who,
+					self::COLUMN_CHATROOM_ID	=>	$where
 				));
 	}
 	
 	/** @return int */
 	public function leaveRoom($who, $where) {
-		return $this->database->table('in_chatroom')
-				->where('user_id', $who)
-				->where ('chatroom_id', $where)
+		return $this->database->table(self::TABLE_INCHATROOM)
+				->where(self::COLUMN_USER, $who)
+				->where (self::COLUMN_CHATROOM_ID, $where)
 				->delete();
 	}
 	
 	/** @return int */
 	public function updateRoomLastMsg($id, $room, $time = 'now()') {
-		return $this->database->table('in_chatroom')
-				->where('user_id', $id)
-				->where('chatroom_id', $room)
+		return $this->database->table(self::TABLE_INCHATROOM)
+				->where(self::COLUMN_USER, $id)
+				->where(self::COLUMN_CHATROOM_ID, $room)
 				->update(array(
-					'last_message' => $time
+					self::COLUMN_LAST_MSG => $time
 				));
 	}
 	
@@ -76,8 +89,8 @@ class Rooms extends Nette\Object {
 		if ($id == '') {
 			return;
 		}
-		return $this->database->table('in_chatroom')
-				->where('chatroom_id', $id)
+		return $this->database->table(self::TABLE_INCHATROOM)
+				->where(self::COLUMN_CHATROOM_ID, $id)
 				->order('user.name ASC');
 	}
 	
@@ -86,9 +99,9 @@ class Rooms extends Nette\Object {
 		if ($user == '' || $room == '') {
 			return;
 		}
-		return $this->database->table('room')
-				->where('owner_user_id', $user)
-				->where('id', $room)
+		return $this->database->table(self::TABLE_ROOM)
+				->where(self::COLUMN_OWNER, $user)
+				->where(self::COLUMN_ID, $room)
 				->count();
 	}
 	
@@ -97,9 +110,9 @@ class Rooms extends Nette\Object {
 		if ($chatroom == '') {
 			return;
 		}
-		return $this->database->table('in_chatroom')
-				->where('chatroom_id', $chatroom)
-				->order('entered ASC')
+		return $this->database->table(self::TABLE_INCHATROOM)
+				->where(self::COLUMN_CHATROOM_ID, $chatroom)
+				->order(self::COLUMN_ENTERED . ' ASC')
 				->limit(1)
 				->fetch();
 	}
@@ -109,10 +122,10 @@ class Rooms extends Nette\Object {
 		if ($user == '' || $room == '') {
 			return;
 		}
-		return $this->database->table('room')
-				->where('id', $room)
+		return $this->database->table(self::TABLE_ROOM)
+				->where(self::COLUMN_ID, $room)
 				->update(array(
-					'owner_user_id' => $user
+					self::COLUMN_OWNER => $user
 				));
 	}
 	
@@ -121,34 +134,34 @@ class Rooms extends Nette\Object {
 		if (is_null($user) || is_null($room)) {
 			return;
 		}
-		return $this->database->table('in_chatroom')
-				->where('user_id', $user)
-				->where('chatroom_id', $room)
+		return $this->database->table(self::TABLE_INCHATROOM)
+				->where(self::USER, $user)
+				->where(self::COLUMN_CHATROOM_ID, $room)
 				->delete();
 	}
 	
 	/** @return  int Number of deleted chatrooms */
 	public function deleteRoom($room) {
-		return $this->database->table('room')
-				->where('id', $room)
+		return $this->database->table(self::TABLE_ROOM)
+				->where(self::COLUMN_ID, $room)
 				->delete();
 	}
 	
 	/** @return Nette\Database\Table\ActiveRow */
 	public function createRoom($data) {
-		if (isset($data["locked"])  && $data["locked"] == TRUE && isset($data["password"])) {
-			return $this->database->table('room')->insert(array(
-				'title'	=> $data["title"],
-				'owner_user_id'	=> $data["user_id"],
-				'lock'	=> 't',
-				'description'	=> $data["description"],
-				'password'	=> $data["password"]
+		if (isset($data["locked"]) && $data["locked"] == TRUE && isset($data["password"])) {
+			return $this->database->table(self::TABLE_ROOM)->insert(array(
+				self::COLUMN_TITLE	=> $data["title"],
+				self::COLUMN_OWNER	=> $data["user_id"],
+				self::COLUMN_LOCK	=> 't',
+				self::COLUMN_DESCRIPTION	=> $data["description"],
+				self::COLUMN_PASSWORD	=> $data["password"]
 			));
 		} else {
-			return $this->database->table('room')->insert(array(
-				'title'	=> $data["title"],
-				'owner_user_id'	=> $data["user_id"],
-				'description'	=> $data["description"]
+			return $this->database->table(self::TABLE_ROOM)->insert(array(
+				self::COLUMN_TITLE	=> $data["title"],
+				self::COLUMN_OWNER	=> $data["user_id"],
+				self::COLUMN_DESCRIPTION	=> $data["description"]
 			));
 		}
 	}
@@ -156,22 +169,22 @@ class Rooms extends Nette\Object {
 	/** @return int */
 	public function updateRoom($data) {
 		if (isset($data["locked"])  && $data["locked"] == TRUE && isset($data["password"])) {
-			return $this->database->table('room')
-					->where('id', $data["chatroom_id"])
+			return $this->database->table(self::TABLE_ROOM)
+					->where(self::COLUMN_ID, $data["chatroom_id"])
 					->update(array(
-						'title'			=> $data["title"],
-						'lock'			=> 't',
-						'description'	=> $data["description"] ,
-						'password'		=> $data["password"]
+						self::COLUMN_TITLE			=> $data["title"],
+						self::COLUMN_LOCK			=> 't',
+						self::COLUMN_DESCRIPTION	=> $data["description"] ,
+						self::COLUMN_PASSWORD		=> $data["password"]
 					));
 		} else {
-			return $this->database->table('room')
-					->where('id', $data["chatroom_id"])
+			return $this->database->table(self::TABLE_ROOM)
+					->where(self::COLUMN_ID, $data["chatroom_id"])
 					->update(array(
-						'title'			=> $data["title"],
-						'description'	=> $data["description"],
-						'lock'			=> 'f',
-						'password'		=> null
+						self::COLUMN_TITLE			=> $data["title"],
+						self::COLUMN_DESCRIPTION	=> $data["description"],
+						self::COLUMN_LOCK			=> 'f',
+						self::COLUMN_PASSWORD		=> null
 					));
 		}
 	}
