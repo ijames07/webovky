@@ -12,9 +12,11 @@ use Nette,
 class HomepagePresenter extends BasePresenter
 {
 
-	public function renderDefault()
+	public function actionDefault()
 	{
-		$this->template->anyVariable = 'any value';
+		if ($this->getUser()->isLoggedIn()) {
+			$this->redirect('Chatrooms:');
+		}
 	}
 
 }
