@@ -22,9 +22,10 @@ $(function(){
 		}
 		postMessage(msg, author, formatDate(new Date()), to);
 		var room = document.URL.substring(document.URL.lastIndexOf('/') + 1, document.URL.length);
+		var url = $('body').data('url');
 		var jqxhr = $.ajax({ 
 						method: 'POST',
-						url: "/chat/www/chatrooms/send",
+						url: url + "/chatrooms/send",
 						cache: false,
 						data: { msg: msg, room: room, to: to }
 					});
@@ -78,16 +79,17 @@ function postMessage(msg, author, time, to) {
 function update() {
 	//var lastMsgId = $('.message').get(0).id;
 	var id = document.URL.substring(document.URL.lastIndexOf('/') + 1, document.URL.length);
+	var url = $('body').data('url');
 	var jqxhr = $.ajax({
 					method: 'POST',
-					url: "/chat/www/chatrooms/update",
+					url: url + "/chatrooms/update",
 					cache: false,
 					data: { room: id }
 				})
 		.done(function(msg) {
 			if (typeof msg.kick !== 'undefined') {
 				clearInterval(aktualizuj);
-				window.location.href = '/chat/www/chatrooms?kick=yes';
+				window.location.href = url + '/chatrooms?kick=yes';
 			}
 			var me = $('#name').val();
 			for (i = 0; i < msg.length; i++) {
